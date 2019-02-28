@@ -144,7 +144,27 @@ read.data <- function() {
   data[, relevant.cols]
 }
 
-download.raw.data()
-data <- read.data()
+args <- commandArgs(TRUE)
 
-write.csv(file='tidy.data.1.csv', data, row.names = FALSE)
+clear()
+
+if(length(args) == 0) {
+  cat(blue('Usage: Rscript run_analysis.R <stage>\n\twhere stage=data|analysis\n\n'))
+}
+
+if('data' %in% args) {
+  download.raw.data()
+  data <- read.data()
+  
+  data.summary <- data %>%
+    group_by(Subject, Y) %>%
+    summarise_at(vars(-c('Y', 'Subject', 'Set')), funs(mean(.)))
+  
+  write.csv(file='tidy.data.1.csv', data, row.names = FALSE)
+  write.csv(file='tidy.data.1.summary.csv', data.summary, row.names = FALSE)
+} else if('analysis' %in% args)
+{
+  cat(blue('Not implemented yet\n\n'))
+} else {
+  cat(red(paste('stage not recognized: ', args[1], '\n\n')))
+}
