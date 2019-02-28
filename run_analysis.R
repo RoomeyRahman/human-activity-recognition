@@ -12,6 +12,8 @@ library(tools)
 
 clear <- function() cat("\014")
 
+clear()
+
 download.raw.data <- function() {
   if(!file.exists('data')) {
     data.url  <- 'https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'
@@ -79,11 +81,23 @@ read.col.names <- function() {
   col.names
 }
 
+read.subjects <- function() {
+  train.subjects <- scan('data/train/subject_train.txt')
+  test.subjects <- scan('data/test/subject_test.txt')
+  
+  list(
+    train = train.subjects,
+    test = test.subjects,
+    levels = c(train.subjects, test.subjects) %>% unique %>% sort
+  )
+}
+
 read.data <- function() {
   cat(blue('Loading data into matrices and vectors\n'))
   
   col.names <- read.col.names()
   activity.names <- read.activity.names()
+  subjects <- read.subjects()
   
   train.x <- scan('data/train/X_train.txt') %>% matrix(ncol = 561, byrow = TRUE)
   train.y.raw <- read_lines('data/train/y_train.txt')
@@ -108,11 +122,13 @@ read.data <- function() {
   colnames(train.x) <- col.names
   train.x$Y <- train.y
   train.x$Set <- "train"
+  train.x$Subject <- factor(subjects$train, levels = subjects$levels)
   
   test.x <- tbl_df(as.data.frame(test.x))
   colnames(test.x) <- col.names
   test.x$Y <- test.y
   test.x$Set <- "test"
+  test.x$Subject <- factor(subjects$test, levels = subjects$levels)
   
   data <- rbind(train.x, test.x)
   
@@ -120,7 +136,7 @@ read.data <- function() {
   
   relevant.cols <- Filter(
     function(col) {
-      length(grep("*\\.Std*|*\\.Mean*|^Y$|^Set$", col)) > 0
+      length(grep("*\\.Std*|*\\.Mean*|^Y$|^Set$|^Subject$", col)) > 0
     },
     names(data)
   )
