@@ -120,13 +120,13 @@ read.data <- function() {
   
   train.x <- tbl_df(as.data.frame(train.x))
   colnames(train.x) <- col.names
-  train.x$Y <- train.y
+  train.x$Activity <- train.y
   train.x$Set <- "train"
   train.x$Subject <- factor(subjects$train, levels = subjects$levels)
   
   test.x <- tbl_df(as.data.frame(test.x))
   colnames(test.x) <- col.names
-  test.x$Y <- test.y
+  test.x$Activity <- test.y
   test.x$Set <- "test"
   test.x$Subject <- factor(subjects$test, levels = subjects$levels)
   
@@ -136,7 +136,7 @@ read.data <- function() {
   
   relevant.cols <- Filter(
     function(col) {
-      length(grep("*\\.Std*|*\\.Mean*|^Y$|^Set$|^Subject$", col)) > 0
+      length(grep("*\\.Std*|*\\.Mean*|^Activity$|^Set$|^Subject$", col)) > 0
     },
     names(data)
   )
@@ -157,8 +157,8 @@ if('data' %in% args) {
   data <- read.data()
   
   data.summary <- data %>%
-    group_by(Subject, Y) %>%
-    summarise_at(vars(-c('Y', 'Subject', 'Set')), funs(mean(.)))
+    group_by(Subject, Activity) %>%
+    summarise_at(vars(-c('Activity', 'Subject', 'Set')), funs(mean(.)))
   
   write.csv(file='tidy.data.1.csv', data, row.names = FALSE)
   write.csv(file='tidy.data.1.summary.csv', data.summary, row.names = FALSE)
