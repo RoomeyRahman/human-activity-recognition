@@ -1,7 +1,5 @@
 # CodeBook for The Preprocessed Human Activity Recognition Using Smartphones Dataset
 
-{{TOC}}
-
 ## Time domain derivation
 
 Variables starting with "T" were derived from the acceleration time-domain signal captured at a constant rate of 50 Hz and filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise.
